@@ -26,10 +26,12 @@ def shutdown_agent(agents: tuple[WazuhAgent]) -> ActiveResponse:
     )
 
 
-def command_to_action(command: str, agent: WazuhAgent, fw_agent_id: str) -> ActiveResponse:
-	if command == "isolate":
-		return isolate_agent(agent, fw_agent_id)
-	elif command == "shutdown":
-		return shutdown_agent((agent,))
-	else:
-		raise ValueError(f"Unknown command '{command}'")
+def command_to_action(
+    command: str, agent: WazuhAgent, fw_agent_id: str
+) -> ActiveResponse:
+    if command == "isolate":
+        return isolate_agent(agent, fw_agent_id)
+    elif command == "shutdown":
+        return shutdown_agent((agent,))
+    else:
+        raise ValueError(f"Unknown command '{command}'")

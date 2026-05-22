@@ -17,9 +17,9 @@ class ActiveResponse(NamedTuple):
 
     def __str__(self) -> str:
         return (
-            f'ActiveResponse(agents={self.agents}, '
+            f"ActiveResponse(agents={self.agents}, "
             f'description="{self.description}", '
-            f'active_response_request={self.active_response_request}'
+            f"active_response_request={self.active_response_request}"
         )
 
 

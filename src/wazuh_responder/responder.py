@@ -1,4 +1,3 @@
-from calendar import c
 import json
 import logging
 from base64 import b64encode
@@ -18,8 +17,8 @@ def status_code_desc(http_status_code: int) -> str:
 
 
 class ResponderBehaviour(Enum):
-    SEND_TO_WAZUH = 'send'
-    SKIP_SEND = 'skip'
+    SEND_TO_WAZUH = "send"
+    SKIP_SEND = "skip"
 
 
 class WazuhRestServerConfig(NamedTuple):
@@ -42,7 +41,7 @@ class Responder(NamedTuple):
         user: str = config.user
         pwd: str = config.pwd
 
-        base_url = f'{config.protocol}://{config.host}:{config.port}'
+        base_url = f"{config.protocol}://{config.host}:{config.port}"
 
         # Disable insecure https warnings (for self-signed SSL certificates)
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -50,13 +49,13 @@ class Responder(NamedTuple):
 
     # The token times out after 10 minutes, so call this before every interaction.
     def get_header(self) -> dict[str, str] | None:
-        logger.debug('Get authorization token header')
-        login_endpoint = 'security/user/authenticate'
-        login_url = f'{self.base_url}/{login_endpoint}'
-        basic_auth = f'{self.user}:{self.pwd}'.encode()
+        logger.debug("Get authorization token header")
+        login_endpoint = "security/user/authenticate"
+        login_url = f"{self.base_url}/{login_endpoint}"
+        basic_auth = f"{self.user}:{self.pwd}".encode()
         login_headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Basic {b64encode(basic_auth).decode()}',
+            "Content-Type": "application/json",
+            "Authorization": f"Basic {b64encode(basic_auth).decode()}",
         }
 
         try:
@@ -67,14 +66,14 @@ class Responder(NamedTuple):
             logger.warning("Connection timed out while fetching token.")
             return None
         # This is the authorization token required.
-        wazuh_token = json.loads(response.content.decode())['data']['token']
+        wazuh_token = json.loads(response.content.decode())["data"]["token"]
         return {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {wazuh_token}',
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {wazuh_token}",
         }
 
     def print_agents(self):
-        logger.debug('Agents:')
+        logger.debug("Agents:")
         response = requests.get(
             self.base_url + "/agents",
             headers=self.get_header(),
@@ -85,7 +84,7 @@ class Responder(NamedTuple):
         res_json = response.json()
         logger.debug(json.dumps(res_json, indent=4, sort_keys=True))
         logger.debug(
-            f'Status: {status_code} - {status_code_desc(response.status_code)}'
+            f"Status: {status_code} - {status_code_desc(response.status_code)}"
         )
 
     def send_active_response_command(
@@ -120,8 +119,8 @@ class Responder(NamedTuple):
             )
             return None
         logger.debug(
-            f'Got response code {response.status_code}: '
-            f'{status_code_desc(response.status_code)}.'
+            f"Got response code {response.status_code}: "
+            f"{status_code_desc(response.status_code)}."
         )
-        logger.debug(f'Got results:\n{json.dumps(response.json(), sort_keys=True)}')
+        logger.debug(f"Got results:\n{json.dumps(response.json(), sort_keys=True)}")
         return response

@@ -21,42 +21,6 @@ WAZUH_CONF = {}
 logger = logging.getLogger(__name__)
 persist_logger = logging.getLogger("persist")
 
-# curl "https://134.24.17.90:55000/agents?pretty=true&sort=-ip,name" -k --cacert certs/tyr_demo3_root-ca.pem -H "Authorization: Bearer $(cat token.txt)"
-
-
-"""
-{
-            "os": {
-               "arch": "x86_64",
-               "codename": "Jammy Jellyfish",
-               "major": "22",
-               "minor": "04",
-               "name": "Ubuntu",
-               "platform": "ubuntu",
-               "uname": "Linux |snort-srv |5.15.0-58-generic |#64-Ubuntu SMP Thu Jan 5 11:43:13 UTC 2023 |x86_64",
-               "version": "22.04.1 LTS"
-            },
-            "lastKeepAlive": "2026-05-22T09:38:04+00:00",
-            "id": "005",
-            "status_code": 0,
-            "configSum": "ab73af41699f13fdd81903b5f23d8d00",
-            "manager": "wazuh",
-            "name": "snort-srv",
-            "ip": "134.24.17.133",
-            "group": [
-               "default"
-            ],
-            "node_name": "node01",
-            "mergedSum": "672c2dd4c55689631f945a884f144dd2",
-            "status": "active",
-            "version": "Wazuh v4.3.2",
-            "registerIP": "any",
-            "dateAdd": "2026-03-13T17:24:06+00:00",
-            "group_config_status": "synced"
-         },
-
-"""
-
 
 class Destination(Enum):
     WAZUH = "wazuh"
