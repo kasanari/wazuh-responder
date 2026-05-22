@@ -1,0 +1,5 @@
+protocol: https
+host: 134.24.17.90
+port: 55000
+user: wazuh
+pwd: wazuh

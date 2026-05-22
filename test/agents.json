@@ -1,0 +1,247 @@
+[
+  {
+    "id": "027",
+    "name": "fw1",
+    "ip": "52.33.204.44",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:26+00:00"
+  },
+  {
+    "id": "007",
+    "name": "dc",
+    "ip": "134.24.4.5",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:25+00:00"
+  },
+  {
+    "id": "001",
+    "name": "rootca",
+    "ip": "134.24.4.46",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:24:51+00:00"
+  },
+  {
+    "id": "008",
+    "name": "ca",
+    "ip": "134.24.4.44",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:29+00:00"
+  },
+  {
+    "id": "026",
+    "name": "ntp",
+    "ip": "134.24.4.21",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:23+00:00"
+  },
+  {
+    "id": "033",
+    "name": "mail",
+    "ip": "134.24.4.16",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:33:06+00:00"
+  },
+  {
+    "id": "011",
+    "name": "db",
+    "ip": "134.24.4.13",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:37:03+00:00"
+  },
+  {
+    "id": "020",
+    "name": "files",
+    "ip": "134.24.4.12",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:36:03+00:00"
+  },
+  {
+    "id": "032",
+    "name": "print",
+    "ip": "134.24.4.11",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:14+00:00"
+  },
+  {
+    "id": "024",
+    "name": "ap16",
+    "ip": "134.24.3.30",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:29+00:00"
+  },
+  {
+    "id": "029",
+    "name": "ap15",
+    "ip": "134.24.3.29",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:32:00+00:00"
+  },
+  {
+    "id": "028",
+    "name": "ap14",
+    "ip": "134.24.3.28",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T01:37:07+00:00"
+  },
+  {
+    "id": "021",
+    "name": "ap13",
+    "ip": "134.24.3.27",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:40:53+00:00"
+  },
+  {
+    "id": "015",
+    "name": "ap12",
+    "ip": "134.24.3.26",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:40:06+00:00"
+  },
+  {
+    "id": "016",
+    "name": "ap11",
+    "ip": "134.24.3.25",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T05:27:27+00:00"
+  },
+  {
+    "id": "019",
+    "name": "ap10",
+    "ip": "134.24.3.24",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:25+00:00"
+  },
+  {
+    "id": "012",
+    "name": "ap09",
+    "ip": "134.24.3.23",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:29+00:00"
+  },
+  {
+    "id": "014",
+    "name": "ap08",
+    "ip": "134.24.3.22",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T05:28:56+00:00"
+  },
+  {
+    "id": "017",
+    "name": "ap07",
+    "ip": "134.24.3.21",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T05:26:56+00:00"
+  },
+  {
+    "id": "022",
+    "name": "ap06",
+    "ip": "134.24.3.16",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:28+00:00"
+  },
+  {
+    "id": "013",
+    "name": "ap05",
+    "ip": "134.24.3.15",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:25+00:00"
+  },
+  {
+    "id": "023",
+    "name": "ap04",
+    "ip": "134.24.3.14",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:21+00:00"
+  },
+  {
+    "id": "093",
+    "name": "ap03",
+    "ip": "134.24.3.13",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:21+00:00"
+  },
+  {
+    "id": "010",
+    "name": "ap02",
+    "ip": "134.24.3.12",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T05:29:03+00:00"
+  },
+  {
+    "id": "025",
+    "name": "ap01",
+    "ip": "134.24.3.11",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-20T04:31:31+00:00"
+  },
+  {
+    "id": "006",
+    "name": "mailrelay",
+    "ip": "134.24.2.16",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T01:43:46+00:00"
+  },
+  {
+    "id": "002",
+    "name": "ns",
+    "ip": "134.24.2.15",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:07+00:00"
+  },
+  {
+    "id": "034",
+    "name": "weborder",
+    "ip": "134.24.2.14",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:08+00:00"
+  },
+  {
+    "id": "009",
+    "name": "timereporter",
+    "ip": "134.24.2.13",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:09+00:00"
+  },
+  {
+    "id": "003",
+    "name": "payroll",
+    "ip": "134.24.2.10",
+    "status": "active",
+    "lastKeepAlive": "2026-04-20T07:10:27+00:00"
+  },
+  {
+    "id": "005",
+    "name": "snort-srv",
+    "ip": "134.24.17.133",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:13+00:00"
+  },
+  {
+    "id": "031",
+    "name": "snort-hqclient",
+    "ip": "134.24.17.132",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:08+00:00"
+  },
+  {
+    "id": "030",
+    "name": "snort-dmz",
+    "ip": "134.24.17.131",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:10+00:00"
+  },
+  {
+    "id": "004",
+    "name": "snort-ext",
+    "ip": "134.24.17.130",
+    "status": "disconnected",
+    "lastKeepAlive": "2026-04-19T04:01:12+00:00"
+  },
+  {
+    "id": "000",
+    "name": "wazuh",
+    "ip": "127.0.0.1",
+    "status": "active",
+    "lastKeepAlive": "9999-12-31T23:59:59+00:00"
+  }
+]
