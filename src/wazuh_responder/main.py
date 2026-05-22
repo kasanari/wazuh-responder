@@ -1,12 +1,12 @@
 from enum import Enum
 from logging import warning
-from pdb import run
-from typing import NamedTuple
-
+import logging
+from typing import Any, NamedTuple
+import datetime
 from typing import Literal
 import requests
 
-from .responder import Responder
+from .responder import Responder, ResponderBehaviour, WazuhRestServerConfig
 
 from .wazuh import WazuhAgent
 from .actions import command_to_action
@@ -16,6 +16,11 @@ import json
 FIREWALL_AGENT_NAME = "fw1"
 AUTH_ENDPOINT = "https://134.24.17.90:55000/security/user/authenticate"
 AGENT_ENDPOINT = "https://134.24.17.90:55000/agents"
+
+WAZUH_CONF = {}
+logger = logging.getLogger(__name__)
+persist_logger = logging.getLogger("persist")
+
 # curl "https://134.24.17.90:55000/agents?pretty=true&sort=-ip,name" -k --cacert certs/tyr_demo3_root-ca.pem -H "Authorization: Bearer $(cat token.txt)"
 
 
@@ -57,15 +62,15 @@ class Destination(Enum):
     WAZUH = "wazuh"
     STDOUT = "stdout"
 
+
 class Config(NamedTuple):
     command: Literal["shutdown", "isolate"]
     agent: str
     agent_file: str | None = None
     destination = Destination.WAZUH
-    wazuh_config_file = "wazuh_config.json"
 
 
-def agents_from_dict(agent_dict: dict) -> WazuhAgent:
+def agents_from_dict(agent_dict: dict[str, Any]) -> WazuhAgent:
     return WazuhAgent(
         id=agent_dict["id"],
         name=agent_dict["name"],
@@ -74,6 +79,13 @@ def agents_from_dict(agent_dict: dict) -> WazuhAgent:
 
 
 def main(config: Config):
+    current_time = datetime.datetime.now()
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
+    persist_logger.addHandler(
+        logging.FileHandler(f"responder_{current_time.strftime('%Y%m%d')}.log")
+    )
+    persist_logger.setLevel(logging.INFO)
     agents = (
         get_agents()
         if not config.agent_file
@@ -82,13 +94,14 @@ def main(config: Config):
             for agent in json.load(open(config.agent_file))
         }
     )
-
-    with open(config.wazuh_config_file) as f:
-        responder = Responder.from_config(json.load(f))
-
-
     if agents is None:
         return
+
+    responder = Responder.from_config(
+        WazuhRestServerConfig(
+            protocol="https", host="134.24.17.90", port=55000, user="wazuh", pwd="wazuh"
+        )
+    )
 
     try:
         firewall_agent_id = agents[FIREWALL_AGENT_NAME].id
@@ -108,11 +121,35 @@ def main(config: Config):
     action = command_to_action(command, target_agent, firewall_agent_id)
 
     destinations = {
-        Destination.WAZUH: lambda: responder.send_active_response_command(action),
-        Destination.STDOUT: lambda: print(action),
+        Destination.WAZUH: lambda: responder.send_active_response_command(
+            action.active_response_request,
+            agents=(target_agent.id,),
+            behaviour=ResponderBehaviour.SEND_TO_WAZUH,
+        ),
+        Destination.STDOUT: lambda: responder.send_active_response_command(
+            action.active_response_request,
+            agents=(target_agent.id,),
+            behaviour=ResponderBehaviour.SKIP_SEND,
+        ),
     }
-     
-    
+
+    result = destinations[config.destination]()
+
+    if isinstance(result, requests.Response):
+        success = result.status_code == 200
+    elif result is None:
+        success = False
+    else:
+        raise ValueError(f"Unexpected result type: {type(result)}")
+
+    persist_logger.info(
+        ",".join(
+            [f"{command}", f"{agent}", f"{current_time.isoformat()}", f"{success}"]
+        )
+    )
+    logger.warning(
+        f"Tried to execute command '{command}' on agent '{agent}'. Success: {success}."
+    )
 
 
 def get_agents() -> dict[str, WazuhAgent] | None:
@@ -122,11 +159,13 @@ def get_agents() -> dict[str, WazuhAgent] | None:
 
     # get token
     login_url = "https://134.24.17.90:55000/security/user/authenticate"
-    warning("Fetching token.")
+    logger.warning("Fetching token.")
     try:
-        response = requests.get(login_url, auth=("wazuh", "wazuh"), verify=False, timeout=5)
+        response = requests.get(
+            login_url, auth=("wazuh", "wazuh"), verify=False, timeout=5
+        )
     except requests.exceptions.ConnectTimeout:
-        warning("Connection timed out while fetching token.")
+        logger.warning("Connection timed out while fetching token.")
         return None
     token = response.json()["data"]["token"]
 

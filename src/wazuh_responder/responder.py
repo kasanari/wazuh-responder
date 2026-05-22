@@ -1,3 +1,4 @@
+from calendar import c
 import json
 import logging
 from base64 import b64encode
@@ -48,7 +49,7 @@ class Responder(NamedTuple):
         return cls(user=user, pwd=pwd, base_url=base_url)
 
     # The token times out after 10 minutes, so call this before every interaction.
-    def get_header(self):
+    def get_header(self) -> dict[str, str] | None:
         logger.debug('Get authorization token header')
         login_endpoint = 'security/user/authenticate'
         login_url = f'{self.base_url}/{login_endpoint}'
@@ -58,7 +59,13 @@ class Responder(NamedTuple):
             'Authorization': f'Basic {b64encode(basic_auth).decode()}',
         }
 
-        response = requests.get(login_url, headers=login_headers, verify=False)
+        try:
+            response = requests.get(
+                login_url, headers=login_headers, verify=False, timeout=5
+            )
+        except requests.exceptions.ConnectTimeout:
+            logger.warning("Connection timed out while fetching token.")
+            return None
         # This is the authorization token required.
         wazuh_token = json.loads(response.content.decode())['data']['token']
         return {
@@ -69,7 +76,10 @@ class Responder(NamedTuple):
     def print_agents(self):
         logger.debug('Agents:')
         response = requests.get(
-            self.base_url + '/agents', headers=self.get_header(), verify=False
+            self.base_url + "/agents",
+            headers=self.get_header(),
+            verify=False,
+            timeout=5,
         )
         status_code = response.status_code
         res_json = response.json()
@@ -91,12 +101,24 @@ class Responder(NamedTuple):
             return None
 
         header = self.get_header()
-        response: requests.Response = requests.put(
-            url=self.base_url + endpoint,
-            headers=header,
-            verify=False,
-            data=json_data,
-        )
+        if header is None:
+            logger.warning(
+                "Failed to get authorization token header, skipping sending active response command."
+            )
+            return None
+        try:
+            response: requests.Response = requests.put(
+                url=self.base_url + endpoint,
+                headers=header,
+                verify=False,
+                data=json_data,
+                timeout=5,
+            )
+        except requests.exceptions.ConnectTimeout:
+            logger.warning(
+                "Connection timed out while sending active response command."
+            )
+            return None
         logger.debug(
             f'Got response code {response.status_code}: '
             f'{status_code_desc(response.status_code)}.'
