@@ -2,7 +2,13 @@
 
 ## Install
 
-Run `uv tool install .`.
+Either 
+
+`uv tool install git+https://github.com/kasanari/wazuh-responder`
+
+or
+
+Clone the repo and run `uv tool install .`.
 
 ## How to run
 
