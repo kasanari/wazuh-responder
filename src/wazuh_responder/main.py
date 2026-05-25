@@ -26,8 +26,14 @@ class Destination(Enum):
     WAZUH = "wazuh"
     STDOUT = "stdout"
 
+class List(NamedTuple):
+    """List all agents in Wazuh manager"""
 
-class Config(NamedTuple):
+    pass
+
+
+class Command(NamedTuple):
+    """Issue a command to an agent"""
     command: Literal["shutdown", "isolate"]  # command to execute on the agent
     agent: str  # name of the target agent in Wazuh manager
     agent_id: str | None = (
@@ -49,7 +55,7 @@ def agents_from_dict(agent_dict: dict[str, Any]) -> WazuhAgent:
     )
 
 
-def main(config: Config):
+def main(config: Command):
     current_time = datetime.datetime.now()
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler())
@@ -166,10 +172,21 @@ def get_agents() -> dict[str, WazuhAgent] | None:
 
     return {agent["name"]: agents_from_dict(agent) for agent in agents}
 
+def list_agents():
+    agents = get_agents()
+    if agents is None:
+        return
+
+    print("Name, ID, IP")
+    for agent in agents.values():
+        print(f"{agent.name}, {agent.id}, {agent.ip}")
 
 def cli():
-    config = tyro.cli(Config)
-    main(config)
+    config = tyro.cli(Command | List)
+    if isinstance(config, List):
+        list_agents()
+    else:
+        main(config)
 
 
 if __name__ == "__main__":
