@@ -28,10 +28,17 @@ class Destination(Enum):
 
 
 class Config(NamedTuple):
-    command: Literal["shutdown", "isolate"]
-    agent: str
-    agent_file: str | None = None
-    destination = Destination.WAZUH
+    command: Literal["shutdown", "isolate"]  # command to execute on the agent
+    agent: str  # name of the target agent in Wazuh manager
+    agent_id: str | None = (
+        None  # optional agent ID, if not provided, it will be fetched from Wazuh manager using the agent name
+    )
+    agent_file: str | None = (
+        None  # optional path to a JSON file containing agent information, if not provided, agents will be fetched from Wazuh manager
+    )
+    destination = (
+        Destination.WAZUH
+    )  # where to send the command, either to Wazuh manager or just print it to stdout
 
 
 def agents_from_dict(agent_dict: dict[str, Any]) -> WazuhAgent:
@@ -77,10 +84,20 @@ def main(config: Config):
     command = config.command
     agent = config.agent
 
-    try:
-        target_agent = agents[agent]
-    except KeyError:
-        raise ValueError(f"Target agent '{agent}' not found in Wazuh manager")
+    if config.agent_id is not None:
+        # If agent ID is provided, find the agent by ID
+        target_agent = next(
+            (agent for agent in agents.values() if agent.id == config.agent_id), None
+        )
+        if target_agent is None:
+            raise ValueError(
+                f"Target agent with ID '{config.agent_id}' not found in Wazuh manager"
+            )
+    else:
+        try:
+            target_agent = agents[agent]
+        except KeyError:
+            raise ValueError(f"Agent with name '{agent}' not found in Wazuh manager")
 
     action = command_to_action(command, target_agent, firewall_agent_id)
 
