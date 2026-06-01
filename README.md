@@ -21,3 +21,9 @@ To shut down, run:
 
 To isolate, run:
 `wazuh-responder command --command isolate --agent [AGENT NAME]`.
+
+## Web Interface
+
+Run
+`start_server.sh`
+then go to `localhost:5000` in your web browser.
