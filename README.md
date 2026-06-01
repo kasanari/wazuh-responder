@@ -26,4 +26,8 @@ To isolate, run:
 
 Run
 `start_server.sh`
-then go to `localhost:5000` in your web browser.
+then go to `localhost:8000` in your web browser.
+
+## Docker
+
+Run `docker compose up -d`. The server will use port 8000.
