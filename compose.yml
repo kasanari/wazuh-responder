@@ -1,0 +1,9 @@
+services:
+  wazuh-responder:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - DEBUG=true

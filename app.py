@@ -2,7 +2,8 @@
 from collections import deque
 from datetime import datetime
 from typing import NamedTuple
-
+import os
+from pathlib import Path
 from flask import Flask, render_template, request
 from wazuh_responder.responder import (
     Responder,
@@ -18,7 +19,11 @@ from wazuh_responder.main import (
 import requests
 import json
 
-DEBUG = False
+# check environment variable for debug mode
+DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
+
+log_dir = Path("logs")
+log_dir.mkdir(exist_ok=True)  # Create logs directory if it doesn't exist
 
 run_id = (
     datetime.now().isoformat(timespec="seconds").replace(":", "-")
@@ -74,6 +79,7 @@ for agent in agents.values():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    assert agents is not None, "Agents should be loaded before starting the app"
     if request.method == "GET":
         return render_template(
             "action_form.html",
@@ -94,10 +100,6 @@ def send_command_get():
         "status_box.html", message="This endpoint only accepts POST requests"
     ), 405
 
-
-log = deque()  # type: deque[LogTuple]
-
-
 class LogTuple(NamedTuple):
     time: str
     agent_name: str
@@ -106,8 +108,12 @@ class LogTuple(NamedTuple):
     reason: str = "No reason provided"
 
 
+log: deque[LogTuple] = deque()
+
+
 @app.route("/send_command", methods=["POST"])
 def send_command():
+    assert agents is not None, "Agents should be loaded before sending commands"
     agent_name = request.form["agents"]
     command = request.form["actions"]
     reason = request.form.get("reason", "No reason provided")
@@ -144,7 +150,7 @@ def send_command():
     )
     log.appendleft(log_entry)
 
-    with open(f"{run_id}.csv", "a") as f:
+    with open(log_dir / f"{run_id}.csv", "a") as f:
         f.write(f"{time},{agent_name},{command},{log_entry.result},{reason}\n")
 
     if isinstance(result, requests.Response):
@@ -157,3 +163,7 @@ def send_command():
             "status_box.html",
             logs=log,
         )
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
