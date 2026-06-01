@@ -26,6 +26,7 @@ class Destination(Enum):
     WAZUH = "wazuh"
     STDOUT = "stdout"
 
+
 class List(NamedTuple):
     """List all agents in Wazuh manager"""
 
@@ -34,6 +35,7 @@ class List(NamedTuple):
 
 class Command(NamedTuple):
     """Issue a command to an agent"""
+
     command: Literal["shutdown", "isolate"]  # command to execute on the agent
     agent: str  # name of the target agent in Wazuh manager
     agent_id: str | None = (
@@ -172,6 +174,7 @@ def get_agents() -> dict[str, WazuhAgent] | None:
 
     return {agent["name"]: agents_from_dict(agent) for agent in agents}
 
+
 def list_agents():
     agents = get_agents()
     if agents is None:
@@ -180,6 +183,7 @@ def list_agents():
     print("Name, ID, IP")
     for agent in agents.values():
         print(f"{agent.name}, {agent.id}, {agent.ip}")
+
 
 def cli():
     config = tyro.cli(Command | List)

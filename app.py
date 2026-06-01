@@ -72,7 +72,6 @@ for agent in agents.values():
     print(f"- {agent.name} (ID: {agent.id}, IP: {agent.ip})")
 
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
@@ -91,7 +90,10 @@ def index():
 
 @app.route("/send_command", methods=["GET"])
 def send_command_get():
-    return render_template("status_box.html", message="This endpoint only accepts POST requests"), 405
+    return render_template(
+        "status_box.html", message="This endpoint only accepts POST requests"
+    ), 405
+
 
 log = deque()  # type: deque[LogTuple]
 
@@ -113,11 +115,15 @@ def send_command():
     print(f"Received command: {command} for agent: {agent_name}")
 
     if not agent_name or not command:
-        return render_template("status_box.html", message="Agent name and command are required"), 400
+        return render_template(
+            "status_box.html", message="Agent name and command are required"
+        ), 400
 
     target_agent = agents.get(agent_name)
     if not target_agent:
-        return render_template("status_box.html", message=f"Agent '{agent_name}' not found"), 404
+        return render_template(
+            "status_box.html", message=f"Agent '{agent_name}' not found"
+        ), 404
 
     action = command_to_action(command, target_agent, firewall_agent_id)
 
