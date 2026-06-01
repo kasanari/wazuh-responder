@@ -22,6 +22,10 @@
 	<input type="text" name="reason" id="reason" placeholder="Reason for action" required>
 
 	<button>Send Command</button>
+	<!-- Reset button with confirmation dialog -->
+	<!-- Reload page after reset to clear log display -->
+	<button hx-put="/reset" hx-confirm="Are you sure you want to reset the log?" hx-target="#results" hx-swap="innerHTML"
+		hx-on::after-request="window.location.reload()">Reset Log</button>
 </form>
 <h3>Log</h3>
 <div id="results" style="

@@ -29,6 +29,11 @@ run_id = (
     datetime.now().isoformat(timespec="seconds").replace(":", "-")
 )  # For log file naming
 
+# create initial log file with headers
+with open(log_dir / f"{run_id}.csv", "w") as f:
+    f.write("time,agent_name,command,result,reason\n")
+
+
 agents = (
     get_agents()
     if not DEBUG
@@ -109,6 +114,26 @@ class LogTuple(NamedTuple):
 
 
 log: deque[LogTuple] = deque()
+
+@app.route("/reset", methods=["PUT"])
+def reset_log():
+    log.clear()
+    assert agents is not None, "Agents should be loaded before resetting log"
+    global run_id
+    run_id = (
+        datetime.now().isoformat(timespec="seconds").replace(":", "-")
+    )  # New run ID for new log file
+    with open(log_dir / f"{run_id}.csv", "w") as f:
+        f.write("time,agent_name,command,result,reason\n")
+    return render_template(
+        "action_form.html",
+        agents=sorted(agents.values(), key=lambda x: x.name),
+        actions=[
+            "isolate",
+            "shutdown",
+        ],
+        logs=log,
+    )
 
 
 @app.route("/send_command", methods=["POST"])
