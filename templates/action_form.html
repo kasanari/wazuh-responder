@@ -1,23 +1,39 @@
 <!-- Action Form, use htmx for dynamic updates -->
 
-<form method="post" action="/send_command">
+{% extends 'layout.html' %}
 
-<select name="actions" id="actions">
-	{% for action in actions %}
-	<option value="{{ action }}">{{ action }}</option>
-	{% endfor %}
-</select>
+{% block content %}
 
-<select name="agents" id="agents">
-	{% for agent in agents %}
-	<option value="{{ agent.name }}">{{ agent.name }}</option>
-	{% endfor %}
-</select>
+<div style="margin: 10px; margin-left: auto; margin-right: auto; width: 68%;">
 
-<input type="text" name="reason" id="reason" placeholder="Reason for action.">
+	<form id="action-form" hx-on::after-request="this.reset()" hx-post="/" hx-target="#results" hx-swap="innerHTML">
+	<select name="actions" id="actions">
+		{% for action in actions %}
+		<option value="{{ action }}">{{ action }}</option>
+		{% endfor %}
+	</select>
 
-<button type="submit">Send Command</button>
+	<select name="agents" id="agents">
+		{% for agent in agents %}
+		<option value="{{ agent.name }}">{{ agent.name }}</option>
+		{% endfor %}
+	</select>
 
+	<input type="text" name="reason" id="reason" placeholder="Reason for action" required>
+
+	<button>Send Command</button>
 </form>
+<h3>Log</h3>
+<div id="results" style="
+        margin-top: 10px;
+        max-height: 720px;
+        overflow-y: auto;
+		border: 1px solid #ccc;
+        overflow-x: hidden;
+    ">
+	{% include 'status_box.html' %}
+</div>
 
-<div id="result" hx-target="#result" hx-swap="innerHTML"></div>
+</div>
+
+{% endblock %}

@@ -1,4 +1,18 @@
-<div>
-	<h2>Result</h2>
-	<p>{{ message }}</p>
-</div>
+<table>
+	<tr>
+		<th>Time</th>
+		<th>Agent</th>
+		<th>Command</th>
+		<th>Result</th>
+		<th>Reason</th>
+	</tr>
+	{% for entry in logs %}
+	<tr>
+		<td>{{ entry.time }}</td>
+		<td>{{ entry.agent_name }}</td>
+		<td>{{ entry.command }}</td>
+		<td>{{ entry.result }}</td>
+		<td>{{ entry.reason }}</td>
+	</tr>
+	{% endfor %}
+</table>

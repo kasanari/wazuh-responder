@@ -1,4 +1,8 @@
 # flask app to send active response commands to wazuh manager
+from collections import deque
+from datetime import datetime
+from typing import NamedTuple
+
 from flask import Flask, render_template, request
 from wazuh_responder.responder import (
     Responder,
@@ -16,6 +20,10 @@ import json
 
 DEBUG = True
 
+run_id = (
+    datetime.now().isoformat(timespec="seconds").replace(":", "-")
+)  # For log file naming
+
 agents = (
     get_agents()
     if not DEBUG
@@ -24,6 +32,7 @@ agents = (
         for agent in json.load(open("test/agents.json"))
     }
 )
+
 
 if agents is None:
     raise ValueError("No agents found in Wazuh manager")
@@ -40,6 +49,20 @@ except KeyError:
         f"Firewall agent '{FIREWALL_AGENT_NAME}' not found in Wazuh manager"
     )
 
+agents = {
+    k: v
+    for k, v in agents.items()
+    if v.name
+    not in {
+        FIREWALL_AGENT_NAME,
+        "flightlogs",
+        "snort-dmz",
+        "snort-ext",
+        "snort-hqclient",
+        "snort-srv",
+        "wazuh",
+    }  # Exclude firewall and other irrelevant agents
+}
 
 app = Flask(__name__)
 
@@ -50,26 +73,43 @@ for agent in agents.values():
 
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template(
-        "action_form.html",
-        agents=agents.values(),
-        actions=[
-            "isolate",
-            "shutdown",
-        ],
-    )
+    if request.method == "GET":
+        return render_template(
+            "action_form.html",
+            agents=sorted(agents.values(), key=lambda x: x.name),
+            actions=[
+                "isolate",
+                "shutdown",
+            ],
+            logs=log,
+        )
+    else:
+        return send_command()
 
 
 @app.route("/send_command", methods=["GET"])
 def send_command_get():
     return render_template("status_box.html", message="This endpoint only accepts POST requests"), 405
 
+log = deque()  # type: deque[LogTuple]
+
+
+class LogTuple(NamedTuple):
+    time: str
+    agent_name: str
+    command: str
+    result: str
+    reason: str = "No reason provided"
+
+
 @app.route("/send_command", methods=["POST"])
 def send_command():
     agent_name = request.form["agents"]
     command = request.form["actions"]
+    reason = request.form.get("reason", "No reason provided")
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"Received command: {command} for agent: {agent_name}")
 
     if not agent_name or not command:
@@ -87,7 +127,25 @@ def send_command():
         behaviour=ResponderBehaviour.SKIP_SEND,
     )
 
+    log_entry = LogTuple(
+        time,
+        agent_name,
+        command,
+        str(result.status_code) if isinstance(result, requests.Response) else "N/A",
+        reason if reason else "No reason provided",
+    )
+    log.appendleft(log_entry)
+
+    with open(f"{run_id}.csv", "a") as f:
+        f.write(f"{time},{agent_name},{command},{log_entry.result},{reason}\n")
+
     if isinstance(result, requests.Response):
-        return render_template("status_box.html", message="Command sent to Wazuh manager"), 200
+        return render_template(
+            "status_box.html",
+            logs=log,
+        )
     else:
-        return render_template("status_box.html", message="Command processed without sending to Wazuh manager"), 200
+        return render_template(
+            "status_box.html",
+            logs=log,
+        )
