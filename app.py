@@ -18,7 +18,7 @@ from wazuh_responder.main import (
 import requests
 import json
 
-DEBUG = True
+DEBUG = False
 
 run_id = (
     datetime.now().isoformat(timespec="seconds").replace(":", "-")
@@ -130,7 +130,9 @@ def send_command():
     result = responder.send_active_response_command(
         action.active_response_request,
         agents=(target_agent.id,),
-        behaviour=ResponderBehaviour.SKIP_SEND,
+        behaviour=ResponderBehaviour.SEND_TO_WAZUH
+        if not DEBUG
+        else ResponderBehaviour.SKIP_SEND,
     )
 
     log_entry = LogTuple(
