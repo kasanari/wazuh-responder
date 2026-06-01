@@ -1,0 +1,23 @@
+<!-- Action Form, use htmx for dynamic updates -->
+
+<form method="post" action="/send_command">
+
+<select name="actions" id="actions">
+	{% for action in actions %}
+	<option value="{{ action }}">{{ action }}</option>
+	{% endfor %}
+</select>
+
+<select name="agents" id="agents">
+	{% for agent in agents %}
+	<option value="{{ agent.name }}">{{ agent.name }}</option>
+	{% endfor %}
+</select>
+
+<input type="text" name="reason" id="reason" placeholder="Reason for action.">
+
+<button type="submit">Send Command</button>
+
+</form>
+
+<div id="result" hx-target="#result" hx-swap="innerHTML"></div>
