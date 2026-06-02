@@ -3,6 +3,7 @@ from collections import deque
 from datetime import datetime
 from typing import NamedTuple
 import os
+import logging
 from pathlib import Path
 from flask import Flask, render_template, request
 from wazuh_responder.responder import (
@@ -24,6 +25,9 @@ DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 
 log_dir = Path("logs")
 log_dir.mkdir(exist_ok=True)  # Create logs directory if it doesn't exist
+
+responder_logger = logging.getLogger("wazuh_responder.responder")
+responder_logger.setLevel(logging.DEBUG)
 
 run_id = (
     datetime.now().isoformat(timespec="seconds").replace(":", "-")
