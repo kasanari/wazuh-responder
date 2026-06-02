@@ -118,6 +118,9 @@ class Responder(NamedTuple):
                 "Connection timed out while sending active response command."
             )
             return None
+        except requests.exceptions.ReadTimeout:
+            logger.warning("Read timed out")
+            return None
         logger.debug(
             f"Got response code {response.status_code}: "
             f"{status_code_desc(response.status_code)}."
