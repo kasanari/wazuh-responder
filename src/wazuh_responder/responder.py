@@ -124,7 +124,7 @@ class Responder(NamedTuple):
         )
         logger.debug(f"Got results:\n{json.dumps(response.json(), sort_keys=True)}")
 
-        json_response = json.loads(response.json())
+        json_response = response.json()
 
         wazuh_response = WazuhResponse(
             affected_items=tuple(json_response["data"]["affected_items"]),
