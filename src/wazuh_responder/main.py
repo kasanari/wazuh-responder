@@ -172,7 +172,11 @@ def get_agents() -> dict[str, WazuhAgent] | None:
         return None
     agents = response.json()["data"]["affected_items"]
 
-    return {agent["name"]: agents_from_dict(agent) for agent in agents}
+    return {
+        agent["name"]: agents_from_dict(agent)
+        for agent in agents
+        if agent["status"] == "active"
+    }
 
 
 def list_agents():
