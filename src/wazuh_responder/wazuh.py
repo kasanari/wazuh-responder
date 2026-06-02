@@ -27,3 +27,17 @@ class WazuhAgent(NamedTuple):
     id: str
     name: str
     ip: str
+
+
+class WazuhResponse(NamedTuple):
+    """
+    "data": {"affected_items": ["015"], "failed_items": [], "total_affected_items": 1,
+    "total_failed_items": 0}, "error": 0, "message": "AR command was sent to all agents"}
+    """
+
+    affected_items: tuple[str, ...]
+    failed_items: tuple[str, ...]
+    total_affected_items: int
+    total_failed_items: int
+    has_error: bool
+    message: str

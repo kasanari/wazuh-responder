@@ -4,39 +4,58 @@
 
 {% block content %}
 
+
+
 <div style="margin: 10px; margin-left: auto; margin-right: auto; width: 68%;">
 
+	<h3>ADS-24 Network Operator Control Panel</h3>
+	<p>
+		Use the form below to send commands to Wazuh agents, by selecting an action and an agent from the dropdown
+		menus. You will also need to provide a short reason for your action.
+		Shutdown will power off the agent, and isolate will prevent it from communicating with other subnets.
+	</p>
+	<p>
+		The table below shows a log of your actions.
+		The "Result" column indicates whether the command was successful or not.
+		Commands sent to shut down or isolate agents will typically fail if the agent is already shut down.
+		The reset button will clear the log, and should not be done by the operator.
+	</p>
+
 	<form id="action-form" hx-on::after-request="this.reset()" hx-post="/" hx-target="#results" hx-swap="innerHTML">
-	<select name="actions" id="actions">
-		{% for action in actions %}
-		<option value="{{ action }}">{{ action }}</option>
-		{% endfor %}
-	</select>
+		<select name="actions" id="actions" style="display: inline-block; margin-right: 10px;">
+			{% for action in actions %}
+			<option value="{{ action }}">{{ action }}</option>
+			{% endfor %}
+		</select>
 
-	<select name="agents" id="agents">
-		{% for agent in agents %}
-		<option value="{{ agent.name }}">{{ agent.name }}</option>
-		{% endfor %}
-	</select>
+		<select name="agents" id="agents" style="display: inline-block; margin-right: 10px;">
+			{% for agent in agents %}
+			<option value="{{ agent.name }}">{{ agent.name }}</option>
+			{% endfor %}
+		</select>
 
-	<input type="text" name="reason" id="reason" placeholder="Reason for action" required>
+		<input type="text" name="reason" id="reason" placeholder="Reason for action"
+			style="display: inline-block; margin-right: 10px;" required>
 
-	<button>Send Command</button>
-	<!-- Reset button with confirmation dialog -->
-	<!-- Reload page after reset to clear log display -->
-	<button hx-put="/reset" hx-confirm="Are you sure you want to reset the log?" hx-target="#results" hx-swap="innerHTML"
-		hx-on::after-request="window.location.reload()">Reset Log</button>
-</form>
-<h3>Log</h3>
-<div id="results" style="
+		<p>
+			<button>Send Command</button>
+			<!-- Reset button with confirmation dialog -->
+			<!-- Reload page after reset to clear log display -->
+			<button hx-put="/reset" hx-confirm="Are you sure you want to reset the log?" hx-target="#results" hx-swap="innerHTML"
+				hx-on::after-request="window.location.reload()">Reset Log</button>
+			</p>
+			</form>
+
+
+	<h3>Log</h3>
+	<div id="results" style="
         margin-top: 10px;
         max-height: 720px;
         overflow-y: auto;
-		border: 1px solid #ccc;
         overflow-x: hidden;
     ">
-	{% include 'status_box.html' %}
-</div>
+		{% include 'status_box.html' %}
+		</div>
 
 </div>
 

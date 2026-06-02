@@ -8,6 +8,7 @@ from pathlib import Path
 from flask import Flask, render_template, request
 from wazuh_responder.responder import (
     Responder,
+    WazuhResponse,
     WazuhRestServerConfig,
     ResponderBehaviour,
 )
@@ -174,7 +175,9 @@ def send_command():
         time,
         agent_name,
         command,
-        str(result.status_code) if isinstance(result, requests.Response) else "N/A",
+        ("False" if x.has_error else "True")
+        if isinstance(x := result, WazuhResponse)
+        else "N/A",
         reason if reason else "No reason provided",
     )
     log.appendleft(log_entry)
@@ -182,16 +185,10 @@ def send_command():
     with open(log_dir / f"{run_id}.csv", "a") as f:
         f.write(f"{time},{agent_name},{command},{log_entry.result},{reason}\n")
 
-    if isinstance(result, requests.Response):
-        return render_template(
-            "status_box.html",
-            logs=log,
-        )
-    else:
-        return render_template(
-            "status_box.html",
-            logs=log,
-        )
+    return render_template(
+        "status_box.html",
+        logs=log,
+    )
 
 
 if __name__ == "__main__":
