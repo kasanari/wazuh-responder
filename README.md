@@ -30,4 +30,4 @@ then go to `localhost:8000` in your web browser.
 
 ## Docker
 
-Run `docker compose up -d`. The server will use port 8000.
+Run `docker compose up`. Add the flag `-d` to run in the background. The server will use port 8000. Logs will be saved in a `logs/` directory created from the run location.
